@@ -2,10 +2,20 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import SiteAsset   # ✅ import for bull image
+from .models import SiteAsset   
 
+from django.http import HttpResponse
+from django.core.files.storage import default_storage
+from .models import SiteAsset
 
-# Helper to fetch bull image dynamically
+def debug_storage(request):
+    bull = SiteAsset.objects.filter(key="bull").first()
+    bull_url = bull.image.url if bull else "No bull image"
+    return HttpResponse(f"""
+        <p>Storage backend: {default_storage}</p>
+        <p>Bull image URL: {bull_url}</p>
+    """)
+
 def get_bull_image():
     return SiteAsset.objects.filter(key="bull").first()
 
@@ -67,3 +77,4 @@ def home(request):
 def user_logout(request):
     logout(request)
     return redirect("login")
+
